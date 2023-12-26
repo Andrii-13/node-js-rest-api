@@ -5,7 +5,8 @@ import { HttpError } from "../helpers/index.js";
 import {
   contactAddSchema,
   contactUpDateShema,
-} from "../schemas/contact-schemas.js";
+  contactUpdateFavoriteSchema,
+} from "../models/Contacts.js";
 
 const getAllContacts = async (req, res, next) => {
   try {
@@ -50,7 +51,10 @@ const updateById = async (req, res, next) => {
       throw HttpError(400, error.message);
     }
     const { contactId } = req.params;
-    const result = await Contact.findByIdAndUpdate({ _id: contactId },req.body);
+    const result = await Contact.findByIdAndUpdate(
+      { _id: contactId },
+      req.body
+    );
     if (!result) {
       throw HttpError(404, `Not found`);
     }
@@ -73,6 +77,25 @@ const delById = async (req, res, next) => {
   }
 };
 
+const updateStatusContact = async (req, res, next) => {
+  try {
+    const { error } = contactUpdateFavoriteSchema.validate(req.body);
+    if (error) {
+      throw HttpError(400, error.message);
+    }
+    const { contactId } = req.params;
+    const result = await Contact.findByIdAndUpdate(
+      { _id: contactId },
+      req.body
+    );
+    if (!result) {
+      throw HttpError(404, `Not found`);
+    }
+    res.json(result);
+  } catch (error) {
+    next(error);
+  }
+};
 
 export default {
   getAllContacts,
@@ -80,4 +103,5 @@ export default {
   addContact,
   updateById,
   delById,
+  updateStatusContact,
 };
