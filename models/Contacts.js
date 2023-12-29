@@ -1,11 +1,12 @@
 import { Schema, model } from "mongoose";
 import Joi from "joi";
-import {handleSaveError, addUpdateSettings} from "./hooks.js";
+import { handleSaveError, addUpdateSettings } from "./hooks.js";
 
-const contactSchema = new Schema(  {
+const contactSchema = new Schema(
+  {
     name: {
       type: String,
-      required: [true, 'Set name for contact'],
+      required: [true, "Set name for contact"],
     },
     email: {
       type: String,
@@ -17,11 +18,12 @@ const contactSchema = new Schema(  {
       type: Boolean,
       default: false,
     },
-  })
+  }, { versionKey: false, timestamps: true }// versionKey: false - прибирає __v0, timestamps: true - додає в базу поля дату створення і дату оновлення
+); 
 
-  contactSchema.post("save", handleSaveError);
-  contactSchema.pre("findOneAndUpdate", addUpdateSettings);  
-  contactSchema.post("findOneAndUpdate", handleSaveError);
+contactSchema.post("save", handleSaveError);
+contactSchema.pre("findOneAndUpdate", addUpdateSettings);
+contactSchema.post("findOneAndUpdate", handleSaveError);
 
 const addSchema = Joi.object({
   name: Joi.string().required(),
@@ -38,20 +40,18 @@ const upDateShema = Joi.object({
 
 const UpdateFavoriteSchema = Joi.object({
   favorite: Joi.boolean().required(),
-})
+});
 
 const customMessages = {
   "string.email": `Enter correct email`,
   "any.required": "missing required {#label} field",
-
 };
 
-
-const Contact = model('contact', contactSchema);
-
+const Contact = model("contact", contactSchema);
 
 export const contactAddSchema = addSchema.messages(customMessages);
 export const contactUpDateShema = upDateShema.messages(customMessages);
-export const contactUpdateFavoriteSchema = UpdateFavoriteSchema.messages(customMessages);
-  
+export const contactUpdateFavoriteSchema =
+  UpdateFavoriteSchema.messages(customMessages);
+
 export default Contact;
