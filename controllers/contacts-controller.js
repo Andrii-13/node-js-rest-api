@@ -1,6 +1,4 @@
 import Contact from "../models/Contacts.js";
-
-// import contactsService from "../models/contacts/index.js";
 import { HttpError } from "../helpers/index.js";
 import {
   contactAddSchema,
@@ -10,7 +8,10 @@ import {
 
 const getAllContacts = async (req, res, next) => {
   try {
-    const result = await Contact.find();
+    const { _id: owner } = req.user;    
+    const { page = 1, limit = 20 } = req.query;//налаштування параментрів запиту
+    const skip = (page - 1) * limit;
+    const result = await Contact.find({ owner },"-createdAt", { skip, limit }).populate("owner", "email subscription"); // skip, limit - передаються 3 параметром
     res.json(result);
   } catch (error) {
     next(error);
@@ -19,9 +20,10 @@ const getAllContacts = async (req, res, next) => {
 
 const getById = async (req, res, next) => {
   try {
-    const { contactId } = req.params;
-    console.log(contactId);
-    const result = await Contact.findById(contactId);
+    const { contactId: _id } = req.params;
+    const { _id: owner } = req.user;
+    const result = await Contact.findOne({ _id, owner });
+
     if (!result) {
       throw HttpError(404, `Not found`);
     }
@@ -37,7 +39,8 @@ const addContact = async (req, res, next) => {
     if (error) {
       throw HttpError(400, error.message);
     }
-    const result = await Contact.create(req.body);
+    const { _id: owner } = req.user;
+    const result = await Contact.create({ ...req.body, owner });
     res.status(201).json(result);
   } catch (error) {
     next(error);
@@ -51,8 +54,9 @@ const updateById = async (req, res, next) => {
       throw HttpError(400, error.message);
     }
     const { contactId } = req.params;
-    const result = await Contact.findByIdAndUpdate(
-      { _id: contactId },
+    const { _id: owner } = req.user;
+    const result = await Contact.findOneAndUpdate(
+      { _id: contactId, owner },
       req.body
     );
     if (!result) {
@@ -67,7 +71,8 @@ const updateById = async (req, res, next) => {
 const delById = async (req, res, next) => {
   try {
     const { contactId } = req.params;
-    const result = await Contact.findByIdAndDelete({ _id: contactId });
+    const { _id: owner } = req.user;
+    const result = await Contact.findOneAndDelete({ _id: contactId, owner });
     if (!result) {
       throw HttpError(404, `Not found`);
     }
