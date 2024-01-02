@@ -16,7 +16,7 @@ app.use(logger(formatsLogger));
 app.use(cors());
 app.use(express.json()); //middleware для post запитів json
 
-app.use("/api/auth", authRouter);
+app.use("/users", authRouter);
 app.use("/api/contacts", contactsRouter);
 
 app.use((req, res) => {

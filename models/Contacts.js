@@ -18,6 +18,10 @@ const contactSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    owner: {
+      type: Schema.Types.ObjectId,
+      ref: 'user',
+    }
   }, { versionKey: false, timestamps: true }// versionKey: false - прибирає __v0, timestamps: true - додає в базу поля дату створення і дату оновлення
 ); 
 

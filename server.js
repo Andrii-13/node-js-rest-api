@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import app from "./app.js";
 
+
 //ствоюємо шлях, в нього код і назву БД
 //svQgIGVFtpEeM44m
 const { DB_HOST, PORT = 3000 } = process.env;
