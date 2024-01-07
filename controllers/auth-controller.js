@@ -9,14 +9,16 @@ const { JWT_SECRET } = process.env;
 const signup = async (req, res, next) => {
   try {
     const { email, password } = req.body;
-
+    if (!email || !password) {
+      throw HttpError(400, "missed required field");
+    }
     const user = await User.findOne({ email });
     if (user) {
       throw HttpError(409, "Email in use");
     }
     const hashPassword = await bcrypt.hash(password, 10);
     const newUser = await User.create({ ...req.body, password: hashPassword });
-    const { subscription} = newUser;
+    const { subscription } = newUser;
     res.status(201).json({
       user: {
         email: newUser.email,
@@ -32,7 +34,7 @@ const signin = async (req, res, next) => {
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
-    if(!email || !password){
+    if (!email || !password) {
       throw HttpError(400, "missing required field");
     }
     if (!user) {
