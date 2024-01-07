@@ -89,8 +89,9 @@ const updateStatusContact = async (req, res, next) => {
       throw HttpError(400, error.message);
     }
     const { contactId } = req.params;
-    const result = await Contact.findByIdAndUpdate(
-      { _id: contactId },
+    const { _id: owner } = req.user;
+    const result = await Contact.findOneAndUpdate(
+      { _id: contactId, owner },
       req.body
     );
     if (!result) {
