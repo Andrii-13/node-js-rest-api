@@ -15,6 +15,7 @@ const formatsLogger = app.get("env") === "development" ? "dev" : "short";
 app.use(logger(formatsLogger));
 app.use(cors());
 app.use(express.json()); //middleware для post запитів json
+app.use(express.static("public")); //middleware дозвіл на видачу файлів
 
 app.use("/users", authRouter);
 app.use("/api/contacts", contactsRouter);

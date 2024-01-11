@@ -20,10 +20,11 @@ const contactSchema = new Schema(
     },
     owner: {
       type: Schema.Types.ObjectId,
-      ref: 'user',
-    }
-  }, { versionKey: false, timestamps: true }// versionKey: false - прибирає __v0, timestamps: true - додає в базу поля дату створення і дату оновлення
-); 
+      ref: "user",
+    },
+  },
+  { versionKey: false, timestamps: true } // versionKey: false - прибирає __v0, timestamps: true - додає в базу поля дату створення і дату оновлення
+);
 
 contactSchema.post("save", handleSaveError); // при додаванні обєкту, якщо виникла помилка, то викидає 400
 contactSchema.pre("findOneAndUpdate", addUpdateSettings); // перед оновленням встановлює, що треба повернути оновлений обєкт, та перевіряє на валідність

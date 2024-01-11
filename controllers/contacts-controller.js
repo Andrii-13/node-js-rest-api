@@ -8,10 +8,13 @@ import {
 
 const getAllContacts = async (req, res, next) => {
   try {
-    const { _id: owner } = req.user;    
-    const { page = 1, limit = 20 } = req.query;//налаштування параментрів запиту
+    const { _id: owner } = req.user;
+    const { page = 1, limit = 20 } = req.query; //налаштування параментрів запиту
     const skip = (page - 1) * limit;
-    const result = await Contact.find({ owner },"-createdAt", { skip, limit }).populate("owner", "email subscription"); // skip, limit - передаються 3 параметром
+    const result = await Contact.find({ owner }, "-createdAt", {
+      skip,
+      limit,
+    }).populate("owner", "email subscription"); // skip, limit - передаються 3 параметром
     res.json(result);
   } catch (error) {
     next(error);
@@ -42,6 +45,8 @@ const addContact = async (req, res, next) => {
     const { _id: owner } = req.user;
     const result = await Contact.create({ ...req.body, owner });
     res.status(201).json(result);
+    console.log(req.body);
+    console.log(req.file);
   } catch (error) {
     next(error);
   }

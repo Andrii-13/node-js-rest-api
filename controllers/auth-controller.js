@@ -1,8 +1,13 @@
 import User from "../models/User.js";
+import fs from "fs/promises";
+import path from "path";
 import { HttpError } from "../helpers/index.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import "dotenv/config";
+import gravatar from "gravatar";
+
+const avatarDir = path.resolve('temp');
 
 const { JWT_SECRET } = process.env;
 
@@ -17,8 +22,10 @@ const signup = async (req, res, next) => {
       throw HttpError(409, "Email in use");
     }
     const hashPassword = await bcrypt.hash(password, 10);
-    const newUser = await User.create({ ...req.body, password: hashPassword });
+    const httpUrl = gravatar.url(email, {s: '100', r: 'x', d: 'retro'}, false);
+    const newUser = await User.create({ ...req.body, password: hashPassword, avatarURL: httpUrl});
     const { subscription } = newUser;
+        
     res.status(201).json({
       user: {
         email: newUser.email,
@@ -84,9 +91,21 @@ const signout = async (req, res) => {
   res.status(204).json();
 };
 
+const changeAvatar = async (req, res, next) =>{
+try {
+  console.log(req.user) 
+  res.status(200).json({
+    avatarURL: "hhhhhhhhhhhhhhhhhhh"
+  })
+} catch (error) {
+  
+}
+}
+
 export default {
   signup,
   signin,
   getCarrent,
   signout,
+  changeAvatar,
 };
