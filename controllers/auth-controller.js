@@ -6,6 +6,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import "dotenv/config";
 import gravatar from "gravatar";
+import Jimp from "jimp";
 
 const avatarDir = path.resolve("public", "avatars");
 
@@ -105,16 +106,26 @@ const changeAvatar = async (req, res, next) => {
     const { path: oldPath, filename } = req.file;
     const newPath = path.join(avatarDir, filename);
     await fs.rename(oldPath, newPath);
-    const result = await User.findOneAndUpdate(
+
+    // Завантажуємо зображення за допомогою Jimp
+    Jimp.read(newPath, (err, image) => {
+      if (err) throw err;
+      image.resize(250, 250);
+      image.write(newPath, (error) => { //можливість записати в іншій каталог, але не переносить
+        if (error) throw err;
+      });
+    });
+
+    await User.findOneAndUpdate(
       { _id: owner },
       { avatarURL: `${newPath}` }
     );
-    console.log(result);
+
     res.status(200).json({
       avatarURL: `${newPath}`,
     });
   } catch (error) {
-    next(error)
+    next(error);
   }
 };
 
