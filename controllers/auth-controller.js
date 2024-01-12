@@ -108,11 +108,11 @@ const changeAvatar = async (req, res, next) => {
     await fs.rename(oldPath, newPath);
 
     // Завантажуємо зображення за допомогою Jimp
-    Jimp.read(newPath, (err, image) => {
-      if (err) throw err;
+    Jimp.read(newPath, (error, image) => {
+      if (error) throw error;
       image.resize(250, 250);
       image.write(newPath, (error) => { //можливість записати в іншій каталог, але не переносить
-        if (error) throw err;
+        if (error) throw error;
       });
     });
 

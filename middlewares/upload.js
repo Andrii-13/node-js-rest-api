@@ -25,9 +25,10 @@ const limits = {
 
 // зробимо фільтрацію по розширенню
 const fileFilter = (req, file, callback) => {
+  const fileExtation = ['jpeg', 'png', 'bmp', 'tiff', "gif", "jpg"]
     const extension = file.originalname.split(".").pop();
-    if (extension === "exe") {
-    callback(HttpError(400, "exe is not valid extetion"));
+    if (!fileExtation.includes(extension)) {
+    callback(HttpError(400, "is not valid file extension"));
   }
   callback(null, true);
 };
