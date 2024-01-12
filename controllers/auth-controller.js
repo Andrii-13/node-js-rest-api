@@ -7,7 +7,7 @@ import jwt from "jsonwebtoken";
 import "dotenv/config";
 import gravatar from "gravatar";
 
-const avatarDir = path.resolve('temp');
+const avatarDir = path.resolve("public", "avatars");
 
 const { JWT_SECRET } = process.env;
 
@@ -22,10 +22,18 @@ const signup = async (req, res, next) => {
       throw HttpError(409, "Email in use");
     }
     const hashPassword = await bcrypt.hash(password, 10);
-    const httpUrl = gravatar.url(email, {s: '100', r: 'x', d: 'retro'}, false);
-    const newUser = await User.create({ ...req.body, password: hashPassword, avatarURL: httpUrl});
+    const httpUrl = gravatar.url(
+      email,
+      { s: "100", r: "x", d: "retro" },
+      false
+    );
+    const newUser = await User.create({
+      ...req.body,
+      password: hashPassword,
+      avatarURL: httpUrl,
+    });
     const { subscription } = newUser;
-        
+
     res.status(201).json({
       user: {
         email: newUser.email,
@@ -91,16 +99,24 @@ const signout = async (req, res) => {
   res.status(204).json();
 };
 
-const changeAvatar = async (req, res, next) =>{
-try {
-  console.log(req.user) 
-  res.status(200).json({
-    avatarURL: "hhhhhhhhhhhhhhhhhhh"
-  })
-} catch (error) {
-  
-}
-}
+const changeAvatar = async (req, res, next) => {
+  try {
+    const { _id: owner } = req.user;
+    const { path: oldPath, filename } = req.file;
+    const newPath = path.join(avatarDir, filename);
+    await fs.rename(oldPath, newPath);
+    const result = await User.findOneAndUpdate(
+      { _id: owner },
+      { avatarURL: `${newPath}` }
+    );
+    console.log(result);
+    res.status(200).json({
+      avatarURL: `${newPath}`,
+    });
+  } catch (error) {
+    next(error)
+  }
+};
 
 export default {
   signup,

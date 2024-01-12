@@ -54,6 +54,7 @@ const addContact = async (req, res, next) => {
 
 const updateById = async (req, res, next) => {
   try {
+    console.log(req.body)
     const { error } = contactUpDateShema.validate(req.body);
     if (error) {
       throw HttpError(400, error.message);

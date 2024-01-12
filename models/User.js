@@ -22,7 +22,6 @@ const userSchema = new Schema(
     },
     avatarURL: {
       type: String,
-      required: true,
     },
     token: String,
   },
@@ -37,7 +36,6 @@ export const userSignupSchema = Joi.object({
   password: Joi.string().required(),
   email: Joi.string().pattern(emailRegexp).required(),
   subscription: Joi.string().required(),
-  // avatarURL: Joi.string(),
 });
 
 export const userSigninSchema = Joi.object({
@@ -45,9 +43,9 @@ export const userSigninSchema = Joi.object({
   password: Joi.string().required(),
 });
 
-// export const userChangeAvatarSchema = Joi.object({
-//   avatar: Joi.string().required(),
-// })
+export const userChangeAvatarSchema = Joi.object({
+  avatar: Joi.string().required(),
+})
 
 const User = model("user", userSchema);
 
