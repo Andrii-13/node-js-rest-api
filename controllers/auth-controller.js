@@ -8,7 +8,9 @@ import "dotenv/config";
 import gravatar from "gravatar";
 import Jimp from "jimp";
 
+const avatarPath = path.resolve("public");
 const avatarDir = path.resolve("public", "avatars");
+
 
 const { JWT_SECRET } = process.env;
 
@@ -102,11 +104,15 @@ const signout = async (req, res) => {
 
 const changeAvatar = async (req, res, next) => {
   try {
+    if (!req.file) {
+      return res.status(400).json({ error: 'avatar was not sent' });
+    }
     const { _id: owner } = req.user;
-    const { path: oldPath, filename } = req.file;
+    const { path: oldPath, filename} = req.file;
+    console.log(req.file);
     const newPath = path.join(avatarDir, filename);
+    
     await fs.rename(oldPath, newPath);
-
     // Завантажуємо зображення за допомогою Jimp
     Jimp.read(newPath, (error, image) => {
       if (error) throw error;
@@ -115,14 +121,13 @@ const changeAvatar = async (req, res, next) => {
         if (error) throw error;
       });
     });
-
     await User.findOneAndUpdate(
       { _id: owner },
       { avatarURL: `${newPath}` }
     );
 
     res.status(200).json({
-      avatarURL: `${newPath}`,
+      avatarURL: `${newPath.slice(avatarPath.length)}`,
     });
   } catch (error) {
     next(error);
