@@ -7,6 +7,10 @@ const authRouter = express.Router();
 
 authRouter.post("/register",upload.single("avatar"), isEmptyBody, authController.signup);
 
+authRouter.get("/verify/:verificationToken", authController.verify);
+
+authRouter.post("/verify", isEmptyBody, authController.resendVerifyEmail)
+
 authRouter.post('/login', isEmptyBody, authController.signin);
 
 authRouter.post('/logout', authenticate, authController.signout);
